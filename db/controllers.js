@@ -28,15 +28,16 @@ const getArticles = (req, res, next) => {
 }
 const getArticleComments = (req, res, next) => {
     const {article_id} = req.params
-    fetchArticleComments(article_id).then((articles) => {
-    res.status(200).send({articles})
+    fetchArticleComments(article_id).then((comments) => {
+    res.status(200).send({comments})
     }).catch(error => {
         next(error);
     });
 }
 const setArticleComment = (req, res, next) => {
-    const {username, body} = req.params
-    createArticleComment(username, body).then((comments) => {
+    const {article_id} = req.params
+    const {username, body} = req.body
+    createArticleComment(username, body, article_id).then((comments) => {
         res.status(200).send({comments})
     }).catch(error => {
         next(error);
@@ -44,8 +45,9 @@ const setArticleComment = (req, res, next) => {
 }
 
 const patchArticleByID = (req, res, next) => {
-    const {article_id, inc_votes} = req.params
-    updateArticleByID(article_id, inc_votes).then((articles) => {
+    const {article_id} = req.params
+    const {inc_votes} = req.body
+    updateArticleByID(inc_votes, article_id).then((articles) => {
         res.status(200).send({articles})
     }).catch(error => {
         next(error)
@@ -54,8 +56,8 @@ const patchArticleByID = (req, res, next) => {
 
 const deleteCommentByID = (req, res, next) => {
     const {comment_id} = req.params
-    removeCommentByID(comment_id).then((articles) => {
-        res.status(200).send({articles})
+    removeCommentByID(comment_id).then(() => {
+        res.status(204).send()
     }).catch(error => {
         next(error)
     })

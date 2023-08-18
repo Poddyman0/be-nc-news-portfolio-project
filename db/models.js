@@ -25,7 +25,14 @@ const fetchArticleByID = (article_id) => {
 const fetchArticles = () => {
     return db
         .query(`
-        SELECT * EXCEPT (body) FROM articles
+        SELECT 
+        articles.article_id,
+        articles.title,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.author,
+        articles.article_img_url,
         COUNT(comments.article_id)::INT AS comment_count
         FROM articles
         LEFT JOIN comments
@@ -39,28 +46,23 @@ const fetchArticles = () => {
 const fetchArticleComments = (article_id) => {
     return db
         .query(`SELECT *
-        FROM articles
-        WHERE article_id = $1;`, [article_id])
-        .then(({rows}) => {
-            const article = rows[0];
-            if (!article) {
-                return Promise.reject({
-                    status: 404,
-                    msg: 'article_id does not exist in databse',
-            })} else {
-    return db
-        .query(`SELECT *
         FROM comments
-        WHERE article_id = $1;`, [article_id])
+        WHERE article_id = $1
+        ORDER BY created_at DESC;`, [article_id])
         .then(({rows}) => {
-            return rows[0];
-        }) 
-}})}
+        if (rows.length === 0) {
+            return Promise.reject({
+                status: 404,
+                msg: 'username or body does not exist in databse',
+            })
+        }
+        return rows;
+})}
 
-const createArticleComment = (username, body) => {
+const createArticleComment = (username, body, article_id) => {
     return db
-        .query(`INSERT INTO comments (username, body)
-        VALUES ($1, $2)`, [username, body])
+        .query(`INSERT INTO comments (author, body, article_id)
+        VALUES ($1, $2, $3) RETURNING *;`, [username, body, article_id])
     .then(({ rows }) => {
     const comment = rows[0];
     if (!comment) {
@@ -73,19 +75,11 @@ const createArticleComment = (username, body) => {
     })
 }
 
-const updateArticleByID = (article_id, inc_votes) => {
+const updateArticleByID = (inc_votes, article_id) => {
     const SQLStr = `
-    SELECT *
-    FROM articles
-    WHERE article_id = $1
-     `
-    if (inc_votes.newVote > 0) {
-        SQLStr += `UPDATE articles SET votes = votes + $2;`
-    } else if (inc_votes.newVote < 0) {
-        SQLStr += `UPDATE articles SET votes = votes - $2;`
-    }
-    return db
-        .query(SQLStr, [article_id, inc_votes])
+    UPDATE articles SET votes = votes + $1
+    WHERE articles.article_id = $2 RETURNING *;`
+    return db.query(SQLStr, [inc_votes, article_id])
     .then(({ rows }) => {
     const article = rows[0]
     if (!article) {
@@ -94,31 +88,22 @@ const updateArticleByID = (article_id, inc_votes) => {
         msg: 'username or body does not exist in databse',
     })
     }
-    return comment
+    return article
     })    
 }
 const removeCommentByID = (comment_id) => {
     return db
-    .query(`UPDATE comments
-    SET 
-        body = NULL,
-        votes = NULL,
-        author = NULL,
-        article_id = NULL,
-        created_at = NULL,
-        article_img_url = NULL,
-        comment_id = NULL,
-    WHERE comments = $1;`, [comment_id])
-    .then(({ rows }) => {
-        const comment = rows[0]
-        if (!comment) {
+    .query(`DELETE FROM comments
+    WHERE comment_id = $1;`, [comment_id])
+    .then(( response ) => {
+        if (response.rowCount === 0) {
         return Promise.reject({
-            status: 204,
-            msg: 'no content',
+            status: 404,
+            msg: 'article does not exist in database',
         })
         }
-        return comment
-        })    
+        return response.rows
+        })   
     }
 
     const fetchAllUsers = () => {
@@ -130,4 +115,4 @@ const removeCommentByID = (comment_id) => {
     }
 
 
-    module.exports = { fetchTopics, fetchArticleByID, fetchArticles, fetchArticleComments, createArticleComment, updateArticleByID, removeCommentByID };
+    module.exports = { fetchTopics, fetchArticleByID, fetchArticles, fetchArticleComments, createArticleComment, updateArticleByID, removeCommentByID, fetchAllUsers };

@@ -144,10 +144,9 @@ describe("GET /api/articles/:article_id", () => {
           });
 
 describe("GET /api/articles", () => {
-/*    test("200 GET: responds with array of all article objects with comment_count added", () => {
+    test("200 GET: responds with array of all article objects with comment_count added", () => {
     return request(app).get('/api/articles').expect(200)
     .then((res) => {
-        console.log(res.body)
         const {articles} = res.body
             expect(Array.isArray(articles)).toEqual(true)
             expect(articles.length).toBe(13);
@@ -194,7 +193,6 @@ describe("GET /api/articles", () => {
             })
         })
     })
-*/
     test('status:404, responds with an error message when passed a article input', () => {
         return request(app)
           .get('/api/banana')
@@ -206,13 +204,12 @@ describe("GET /api/articles", () => {
 })
 
 describe("get /api/articles/:article_id/comments", () => {
-/*    test("200 get: returns an array with properties of comment_id, cotes, created_at, author, body, article_id", () => {
+    test("200 get: returns an array with properties of comment_id, cotes, created_at, author, body, article_id", () => {
     return request(app).get('/api/articles/1/comments').expect(200)
-    .then((res) => {
-        const {comments} = res.body
-        console.log(comments)
+    .then(({body}) => {
+        const comments = body.comments
         expect(Array.isArray(comments)).toBe(true)
-            expect(comments.length).toBe(18);
+            expect(comments.length).toBe(11);
                 comments.forEach(comment => {
                     expect(comment).toEqual(
                       expect.objectContaining({
@@ -220,7 +217,7 @@ describe("get /api/articles/:article_id/comments", () => {
                         votes: expect.any(Number),
                         author: expect.any(String),
                         article_id: expect.any(Number),
-                        created_at: expect.any(Number),
+                        created_at: expect.any(String),
                         comment_id: expect.any(Number)
                       })
                     );
@@ -232,31 +229,18 @@ describe("get /api/articles/:article_id/comments", () => {
         return request(app).get('/api/articles/1/comments').expect(200)
         .then((res) => {
             const {comments} = res.body
-            const commentsDateOrderedArr = []
-            comments.forEach(comment => {
-                commentsDateOrderedArr.push(comment.created_at)
+            expect(comments).toBeSortedBy("created_at", {descending: true})
             })
-            function isCommentsDescendingOrder(arr) {
-                for (let i = 1; i < arr.length; i++) {
-                  if (arr[i] > arr[i - 1]) {
-                    return false;
-                  }
-                }
-                return true;
-              }               
-            expect(isCommentsDescendingOrder(commentsDateOrderedArr)).toBe(true);
-            })   
-    })
-*/
+        })   
     test('status:404 get, responds with an error message when passed a invalid article input', () => {
             return request(app)
-              .get('/api/banana/comments')
+              .get('/api/banana/1/comments')
               .expect(404)
               .then(({ body }) => {
                 expect(body.msg).toBe('not found');
               });
     })
-/*
+
     test('status:404 get, responds with an error message when a valid input_ID which does not exist on the database', () => {
         return request(app)
           .get('/api/articles/900/comments')
@@ -265,11 +249,10 @@ describe("get /api/articles/:article_id/comments", () => {
             expect(body.msg).toBe('article_id does not exist in databse');
           });
     })
-*/
 })
 describe("post /api/articles/:article_id/comments", () => {
-/*    test("200 post: requests an object with body and udername properties", () => {
-    return request(app).post('/api/articles/1/comments').send({username: "podders", body: "gamer"}).expect(200)
+    test("200 post: requests an object with body and udername properties", () => {
+    return request(app).post('/api/articles/1/comments').send({username: 'butter_bridge', body: 'gamer'}).expect(200)
     .then((request) => {
         const {comments} = request.body
         expect(typeof comments).toBe('object')
@@ -282,17 +265,17 @@ describe("post /api/articles/:article_id/comments", () => {
         })
     })
     test("200 post: respons with posted comment", () => {
-        return request(app).post('/api/articles/1/comments').send({username: "podders", body: "gamer"}).expect(200)
+        return request(app).post('/api/articles/1/comments').send({username: 'butter_bridge', body: 'gamer'}).expect(200)
         .then((respond) => {
             const {comments} = respond.body
             expect(typeof comments).toBe('object')
-            expect(comment).toEqual(
+            expect(comments).toEqual(
                 expect.objectContaining({
                   body: expect.any(String),
                   votes: expect.any(Number),
                   author: expect.any(String),
                   article_id: expect.any(Number),
-                  created_at: expect.any(Number),
+                  created_at: expect.any(String),
                   comment_id: expect.any(Number)
                 })
               );
@@ -314,118 +297,71 @@ describe("post /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe('article_id does not exist in databse');
       });
     })
-*/
+
 })
 
 describe("patch /api/articles/:article_id", () => {
-/*
-    test("200 patch: requests an object with body and username properties", () => {
-    return request(app).post('/api/articles/1/comments').send({article_id: 1, inc_votes: +1 }).expect(200)
-    .then((request) => {
-        const {articles} = request.body
-        expect(typeof articles).toBe('object')
-        expect(article).toEqual(
-                expect.objectContaining({
-                  article_id: expect.any(Number),
-                  inc_votes: expect.any(Number)
-                })
-              );
-        })
-    })
 
     test("200 patch: responds with an object with body and username properties", () => {
-        return request(app).post('/api/articles/1/comments').send({article_id: 1, inc_votes: +1 }).expect(200)
-        .then((response) => {
-            const {articles} = response.body
+        return request(app).patch('/api/articles/1').send({inc_votes: -1 }).expect(200)
+        .then((respond) => {
+            const {articles} = respond.body
             expect(typeof articles).toBe('object')
-            expect(article).toEqual(
+            expect(articles).toEqual(
                     expect.objectContaining({
                       title: expect.any(String),
                       topic: expect.any(String),
                       author: expect.any(String),
                       body: expect.any(String),
-                      created_at: expect.any(Number),
+                      created_at: expect.any(String),
                       article_img_url: expect.any(String),
                       article_id: expect.any(Number),
-                      votes: expect.any(Number),
-                      comment_count: expect.any(Number)
+                      votes: expect.any(Number)
                     })
                   );
             })
         })
-*/
+
 })
 
     test('status:404 patch, responds with an error message when passed a invalid article input', () => {
         return request(app)
-          .post('/api/banana/comments')
+          .patch('/api/banana/comments')
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).toBe('not found');
           });
     })
-/*
+
     test('status:404 get, responds with an error message when a valid input_ID which does not exist on the database', () => {
     return request(app)
-      .post('/api/articles/900')
+      .patch('/api/articles/900')
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('not found');
+        expect(body.msg).toBe('article_id does not exist in databse');
       });
 })
-*/
+
 describe("DELETE /api/articles/:article_id", () => {
-/*    test("200 delete: deletes comment by id", () => {
-        const deletedComment = {
-            body: null,
-            votes: null,
-            author: null,
-            article_id: null,
-            created_at: null,
-            article_img_url: null,
-            comment_id: null
-          }
-    return request(app).delete('/api/comments/5').send('5').expect(200)
-    .then((request) => {
-    const {comment} = request.body;
-    expect(typeof comment).toEqual('object')
-    expect(comment).toMatchObject(deletedComment)
-    expect(comment).toEqual(
-        expect.objectContaining({
-                body: expect(null),
-                votes: expect(null),
-                author: expect(null),
-                article_id: expect(null),
-                created_at: expect(null),
-                article_img_url: expect(null),
-                comment_id: expect(null),
-            }))
-    })
-    })
-    test("200 delete: responds with status 204 and no content", () => {
-        return request(app).post('/api/comments/5').send('5')
-        .expect(204)
-        .then(({ body }) => {
-          expect(body.msg).toBe('no content');
-          expect(body.status).toBe(204)
-        });
+    test("204 delete: deletes comment by id", () => {
+    return request(app).delete('/api/comments/5').expect(204)
     })
 })
-*/
+// add in 404 test = 'article does not exist in database'
 describe("/api/users", () => {
-/*    test("get 200: when passed an array of objects returns an array of objects which arent mutated and have same properties", () => {
+    test("get 200: when passed an array of objects returns an array of objects which arent mutated and have same properties", () => {
         return request(app).get('/api/users').expect(200)
         .then((res) => {
-            const {users} = res.body
-            expect(Array.isArray(users)).toEqual(true)
-            expect(users.length).toBe(4);
-            expect(users).toEqual(users);
-            users.forEach(user => {
-                    expect(user).toEqual(
+            const {articles} = res.body
+            expect(Array.isArray(articles)).toEqual(true)
+            expect(articles.length).toBe(4);
+            expect(articles).toEqual(articles);
+            articles.forEach(article => {
+                    expect(article).toEqual(
                       expect.objectContaining({
                         username: expect.any(String),
                         name: expect.any(String),
-                        avatar_url: expect.any(String),
+                        avatar_url: expect.any(String)
                       })
                     );
                   })
@@ -435,22 +371,22 @@ describe("/api/users", () => {
     test("get 200: when given an array of objects, returns the same values", () => {
         return request(app).get('/api/users').expect(200)
         .then((res) => {
-            const {users} = res.body    
-            expect(users[0].username).toEqual('butter_bridge');
-            expect(users[0].name).toEqual('jonny');
-            expect(users[0].avatar_url).toEqual('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg');
-            expect(users[1].username).toEqual('icellusedkars');
-            expect(users[1].name).toEqual('sam');
-            expect(users[1].avatar_url).toEqual('https://avatars2.githubusercontent.com/u/24604688?s=460&v=4');
-            expect(users[2].username).toEqual('rogersop');
-            expect(users[2].name).toEqual('paul');
-            expect(users[2].avatar_url).toEqual('https://avatars2.githubusercontent.com/u/24394918?s=400&v=4');
-            expect(users[3].username).toEqual('lurker');
-            expect(users[3].name).toEqual('do_nothing');
-            expect(users[3].avatar_url).toEqual('https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png');
+            const {articles} = res.body    
+            expect(articles[0].username).toEqual('butter_bridge');
+            expect(articles[0].name).toEqual('jonny');
+            expect(articles[0].avatar_url).toEqual('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg');
+            expect(articles[1].username).toEqual('icellusedkars');
+            expect(articles[1].name).toEqual('sam');
+            expect(articles[1].avatar_url).toEqual('https://avatars2.githubusercontent.com/u/24604688?s=460&v=4');
+            expect(articles[2].username).toEqual('rogersop');
+            expect(articles[2].name).toEqual('paul');
+            expect(articles[2].avatar_url).toEqual('https://avatars2.githubusercontent.com/u/24394918?s=400&v=4');
+            expect(articles[3].username).toEqual('lurker');
+            expect(articles[3].name).toEqual('do_nothing');
+            expect(articles[3].avatar_url).toEqual('https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png');
         })
     })
-*/
+
     //copy over to other tests where 400 is 404
     test('status:404, responds with an error message when passed a invalid topic path', () => {
         return request(app)
@@ -461,7 +397,6 @@ describe("/api/users", () => {
           });
       });
 });
-})
 //task 7: adds a comment to article
 //change patch -  responds with posted comment
 
