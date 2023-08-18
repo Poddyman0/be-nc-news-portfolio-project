@@ -1,5 +1,5 @@
 const express = require('express')
-const {getApiTopics, getAPI, getArticleByID, processedArticles} = require('./controllers.js');
+const {getApiTopics, getAPI, getArticleByID, getArticles, getArticleComments, setArticleComment, patchArticleByID, deleteCommentByID, getAllUsers } = require('./controllers.js');
 const app = express();
 
 app.use(express.json())
@@ -10,24 +10,39 @@ app.get('/api', getAPI)
 
 app.get('/api/articles/:article_id', getArticleByID)
 
+app.get('/api/articles', getArticles)
+
+app.get('/api/articles/:article_id/comments', getArticleComments)
+
+app.post('/api/articles/:article_id/comments', setArticleComment)
+
+app.patch('/api/articles/:article_id', patchArticleByID)
+
+app.delete('/api/comments/:comment_id', deleteCommentByID)
+
+app.get('/api/users', getAllUsers)
+
+app.use((req, res) => {
+    res.status(404).send({msg: 'not found'})
+})
+
 app.use((err, req, res, next) => {
     if (err.status && err.msg) {
         res.status(err.status).send({msg: 'article_id does not exist in databse'})
     }
-    else if (err.code === "22P02") {
-    res.status(400).send({msg: 'Invalid input'})
-    }
-    else {
-    res.status(500).send("server error getting API")
-    }
+    else next(err)
 })
 
-
-/*
-
-app.get('/api/articles/:article_id/comments', (req, res) => {
-    res.send(getArticleComments)
-    res.status(200).send({ msg: 'Getting API article comments' })
+app.use((err, req, res, next) => {
+    if (err.code === "22P02") {
+        res.status(400).send({msg: 'Invalid input'})
+    }
+    else next(err)
 })
-*/
+
+app.use((err, req, res, next) => {
+    console.log(err)
+    res.status(500).send({msg: 'server error getting API'})
+})
+
 module.exports = app;

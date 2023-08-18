@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticleByID, readArticleID, processedArticles, getArticleComments} = require('./models.js')
+const { fetchTopics, fetchArticleByID, fetchArticles, fetchArticleComments, createArticleComment, updateArticleByID, removeCommentByID, fetchAllUsers } = require('./models.js')
 const endpoints = require('../endpoints.json')
 
 const getApiTopics = (req, res, next) => {
@@ -9,7 +9,7 @@ const getApiTopics = (req, res, next) => {
 });
 }
 const getAPI = (req, res, next) => {
-    res.status(200).send({endpoints})
+    res.status(200).send(endpoints)
 }
 const getArticleByID = (req, res, next) => {
     const {article_id} = req.params
@@ -19,23 +19,57 @@ const getArticleByID = (req, res, next) => {
         next(error);
     });
 }
-/*
-const readArticleID = (req, res) => {
-    readAPI().then((endpointAuthor) => {
-   res.status(200).send({endpointAuthor})
-})
+const getArticles = (req, res, next) => {
+    fetchArticles().then((articles) => {
+    res.status(200).send({articles})
+    }).catch(error => {
+        next(error);
+    })
 }
-const processedArticles = (req, res) => {
-    processedArticles().then((endpointArticle) => {
-   res.status(200).send({endpointAticle})
-})
+const getArticleComments = (req, res, next) => {
+    const {article_id} = req.params
+    fetchArticleComments(article_id).then((articles) => {
+    res.status(200).send({articles})
+    }).catch(error => {
+        next(error);
+    });
 }
-const getArticleComments = (req, res) => {
-    getArticleComments().then((endpointArticle) => {
-   res.status(200).send({endpointAticle})
-})
+const setArticleComment = (req, res, next) => {
+    const {username, body} = req.params
+    createArticleComment(username, body).then((comments) => {
+        res.status(200).send({comments})
+    }).catch(error => {
+        next(error);
+    });
 }
-*/
+
+const patchArticleByID = (req, res, next) => {
+    const {article_id, inc_votes} = req.params
+    updateArticleByID(article_id, inc_votes).then((articles) => {
+        res.status(200).send({articles})
+    }).catch(error => {
+        next(error)
+    })
+}
+
+const deleteCommentByID = (req, res, next) => {
+    const {comment_id} = req.params
+    removeCommentByID(comment_id).then((articles) => {
+        res.status(200).send({articles})
+    }).catch(error => {
+        next(error)
+    })
+}
+
+const getAllUsers = (req, res, next) => {
+    const {article_id} = req.params
+    fetchAllUsers(article_id).then((articles) => {
+        res.status(200).send({articles})
+    }).catch(error => {
+        next(error)
+    })
+}
 
 
-module.exports = {getApiTopics, getAPI, getArticleByID/* readArticleID, processedArticles, getArticleComments */}
+    module.exports = {getApiTopics, getAPI, getArticleByID, getArticles, getArticleComments, setArticleComment, patchArticleByID, deleteCommentByID, getAllUsers}
+
