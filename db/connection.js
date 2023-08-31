@@ -1,11 +1,8 @@
 const { Pool } = require('pg');
-//const db = new Pool();
-//module.exports = db;
 const ENV = process.env.NODE_ENV || 'development';
 const pathToEnvFile = `${__dirname}/../.env.${ENV}`
 require ("dotenv")
 .config ({path: pathToEnvFile})
-console.log(ENV)
 if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
   throw new Error('PGDATABASE or DATABASE_URL not set');
 }

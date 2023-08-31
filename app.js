@@ -1,5 +1,5 @@
 const express = require('express')
-const {getApiTopics, getAPI, getArticleByID, getArticles, getArticleComments, setArticleComment, patchArticleByID, deleteCommentByID, getAllUsers } = require('./controllers.js');
+const {getApiTopics, getAPI, getArticleByID, getArticles, getArticleComments, setArticleComment, patchArticleByID, deleteCommentByID, getAllUsers } = require('./db/controllers.js');
 const app = express();
 
 app.use(express.json())
