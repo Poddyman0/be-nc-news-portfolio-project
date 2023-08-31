@@ -51,7 +51,9 @@ Setting Up Environment Variables and Connecting to Databases Locally
         Node.js: "^3.0.1",
         Postgress: "^8.7.3"
 
-13. Project Summary:
+13. link to hosted version of app: https://be-nc-news-tnfa.onrender.com
+
+14. Project Summary:
     # BE2-NC-Knews
 
 ## Northcoders News API
@@ -234,6 +236,8 @@ GET /api
 ### Step 3 - Hosting
 
 Make sure your application and your database is hosted using heroku
+
+link to hosted version of app: https://be-nc-news-tnfa.onrender.com
 
 ### Step 4 - Preparing for your review and portfolio
 
