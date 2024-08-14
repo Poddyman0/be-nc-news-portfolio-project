@@ -333,7 +333,7 @@ describe("patch /api/articles/:article_id", () => {
           });
     })
 
-    test('status:404 get, responds with an error message when a valid input_ID which does not exist on the database', () => {
+    test('status:a404 get, responds with an error message when a valid input_ID which does not exist on the database', () => {
     return request(app)
       .patch('/api/articles/900')
       .expect(404)
