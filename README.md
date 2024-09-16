@@ -1,3 +1,5 @@
+Skills and Technologies: PostgreSQL: For database management. Node.js: Server-side environment. Express: Web framework for building the API. Jest: For testing. Husky: For git hooks to prevent broken code. Git: Version control for managing branches and pull requests. Supertest: For API testing. Project Description: I built the back-end API for Northcoders News, a social news platform similar to Reddit. The API interacted with a PostgreSQL database and allowed users to access, create, update, and delete articles, comments, and topics. The API was built with Express in Node.js, and testing was done using Jest and Supertest. Husky was used to ensure no broken code was committed. Project Overview: This API supported CRUD operations, enabling users to fetch articles, filter them, add comments, and manage content through various endpoints. It was designed to mimic a real-world service like Reddit, focusing on backend functionality for a news aggregation platform.
+
 Setting Up Environment Variables and Connecting to Databases Locally
 1. Clone the Repository:
     Type the following in the terminal:
